@@ -1,5 +1,7 @@
 import pandas as pd
-
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
 # Read in the CSV file
 train_peptides = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_peptides.csv')
 
@@ -13,3 +15,12 @@ train_peptides_grouped = train_peptides.groupby(['patient_id', 'visit_month']).a
 
 # Print the resulting dataframe
 print(train_peptides_grouped.head())
+
+# Filter data for a single patient
+patient_id = 'PATIENT_ID_HERE'
+patient_df = df[df['patient_id'] == patient_id]
+
+# Create scatter plot
+sns.scatterplot(x='visit_month', y='PeptideAbundance', data=patient_df)
+plt.title(f'Peptide Abundance vs. Visit Month for Patient {patient_id}')
+plt.show()

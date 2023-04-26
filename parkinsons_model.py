@@ -77,16 +77,5 @@ plt.ylabel('Correlation with UPDRS Part 3')
 plt.title('Top 10 Unique Proteins Correlated with UPDRS Part 3')
 plt.show()
 
-# Read in the CSV files
-df_list = []
-for file_name in ['amp-parkinsons-disease-progression-prediction/train_peptides.csv', 'amp-parkinsons-disease-progression-prediction/train_proteins.csv', 'amp-parkinsons-disease-progression-prediction/train_clinical_data.csv', 'amp-parkinsons-disease-progression-prediction/supplemental_clinical_data.csv']:
-    df = pd.read_csv(file_name)
-    df_list.append(df)
-
-# Merge the dataframes using reduce and specify suffixes for duplicate columns
-merged_df = reduce(lambda left, right: pd.merge(left, right, on='visit_id', how='outer', suffixes=('_clin', '_supp')), df_list)
-
-# Print the resulting dataframe
-print(merged_df.head())
 
 

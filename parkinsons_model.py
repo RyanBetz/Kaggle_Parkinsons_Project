@@ -29,9 +29,50 @@ plt.xlabel('UPDRS Stage')
 plt.ylabel('Correlation Coefficient')
 
 plt.show()
-# Compute the correlation between NPX and UPDRS Part 1 scores
-corr = merged_df['NPX'].corr(merged_df['updrs_1'])
+# Get unique protein codes
+unique_proteins = merged_df['UniProt'].unique()
 
-# Print the correlation value
-print(f"The correlation between NPX and UPDRS Part 1 is: {corr:.3f}")
+# Initialize empty lists for storing correlation values and protein names
+corr_values = []
+protein_names = []
+
+# Get unique protein codes
+unique_proteins = merged_df['UniProt'].unique()
+
+# Initialize a dictionary to store the correlation values
+corr_dict = {}
+
+# Loop through unique protein codes
+for protein in unique_proteins:
+    # Filter the dataframe to only include rows for the current protein
+    protein_df = merged_df[merged_df['UniProt'] == protein]
+
+    # Compute the correlation matrix between NPX and UPDRS Part 3
+    corr_matrix = protein_df[['NPX', 'updrs_3']].corr()
+
+    # Extract the correlation value between the current protein and UPDRS Part 3
+    corr_value = corr_matrix.iloc[0, 1]
+
+    # Add the correlation value to the dictionary
+    corr_dict[protein] = corr_value
+
+# Sort the dictionary by correlation value in descending order
+sorted_corr_dict = dict(sorted(corr_dict.items(), key=lambda x: x[1], reverse=True))
+
+# Get the top 10 highest correlation unique protein codes
+top_10 = dict(list(sorted_corr_dict.items())[:10])
+
+# Get the correlation values for the top 10 unique protein codes
+corr_values = list(top_10.values())
+
+# Get the unique protein codes for the top 10 highest correlations
+unique_proteins = list(top_10.keys())
+
+# Create a bar chart of the correlation values
+plt.bar(x=unique_proteins, height=corr_values)
+plt.xticks(rotation=90)
+plt.xlabel('Unique Protein Codes')
+plt.ylabel('Correlation with UPDRS Part 3')
+plt.title('Top 10 Unique Proteins Correlated with UPDRS Part 3')
+plt.show()
 

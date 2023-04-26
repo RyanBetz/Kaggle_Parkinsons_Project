@@ -3,6 +3,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from functools import reduce
 import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVR
+from sklearn.linear_model import Lasso
+from sklearn.metrics import r2_score
+
 # Read in the CSV file
 train_peptides = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_peptides.csv')
 train_clinical_data = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')
@@ -77,11 +83,36 @@ plt.ylabel('Correlation with UPDRS Part 3')
 plt.title('Top 10 Unique Proteins Correlated with UPDRS Part 3')
 plt.show()
 
-print(merged_df.columns)
-
-# Merge the dataframes based on visit_id, visit_month, and patient_id
+# Merge the dataframes on visit_id, visit_month, and patient_id
 merged_df_2 = pd.merge(train_clinical_data, train_proteins, on=['visit_id', 'visit_month', 'patient_id'], suffixes=('_clinical', '_protein'))
+
+# Group the data by patient_id and UniProt, and select the max value of NPX for each group
+max_npx_df = merged_df_2.groupby(['patient_id', 'UniProt'])['NPX'].min().reset_index()
+
+# Pivot the table to have patient_id as the index and UniProt as the columns
+pivoted_df = max_npx_df.pivot(index='patient_id', columns='UniProt', values='NPX')
+
 # Replace null values with 0
-merged_df_2.fillna(0, inplace=True)
-pd.options.display.max_columns = None
+pivoted_df.fillna(0, inplace=True)
+
+# Select the features and target variable
+features = pivoted_df
+target = train_clinical_data.groupby('patient_id')['updrs_1'].min()
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+
+# Fit a Lasso regression model
+model = Lasso(alpha=0.01)
+model.fit(X_train, y_train)
+
+# Print the model's R-squared score on the training and testing sets
+print("Training set R-squared score:", model.score(X_train, y_train))
+print("Testing set R-squared score:", model.score(X_test, y_test))
+
+
+
+
+
+
 

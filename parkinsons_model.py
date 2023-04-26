@@ -79,6 +79,9 @@ plt.show()
 
 print(merged_df.columns)
 
-
-
+# Merge the dataframes based on visit_id, visit_month, and patient_id
+merged_df_2 = pd.merge(train_clinical_data, train_proteins, on=['visit_id', 'visit_month', 'patient_id'], suffixes=('_clinical', '_protein'))
+# Replace null values with 0
+merged_df_2.fillna(0, inplace=True)
+pd.options.display.max_columns = None
 

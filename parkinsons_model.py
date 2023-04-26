@@ -77,5 +77,8 @@ plt.ylabel('Correlation with UPDRS Part 3')
 plt.title('Top 10 Unique Proteins Correlated with UPDRS Part 3')
 plt.show()
 
+print(merged_df.columns)
+
+
 
 

@@ -6,7 +6,7 @@ import numpy as np
 train_peptides = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_peptides.csv')
 train_clinical_data = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')
 train_proteins = pd.read_csv('amp-parkinsons-disease-progression-prediction/train_proteins.csv')
-
+train_supplemental_clinical_data = pd.read_csv('amp-parkinsons-disease-progression-prediction/supplemental_clinical_data.csv')
 # Merge the dataframes on visit_id, visit_month, and patient_id
 merged_df = pd.merge(train_proteins, train_clinical_data, on=['visit_id', 'visit_month', 'patient_id'])
 # Create scatter plot
@@ -75,4 +75,12 @@ plt.xlabel('Unique Protein Codes')
 plt.ylabel('Correlation with UPDRS Part 3')
 plt.title('Top 10 Unique Proteins Correlated with UPDRS Part 3')
 plt.show()
+
+# Merge the datasets using an outer join on visit_id
+merged_df = pd.merge(train_proteins, train_clinical_data, on=['visit_id', 'visit_month', 'patient_id'])
+merged_df = pd.merge(merged_df, train_peptides, on=['visit_id', 'visit_month', 'patient_id'])
+merged_df = pd.merge(merged_df, train_supplemental_clinical_data, on='visit_id', how='outer', suffixes=('_scd', '_scd'))
+
+# Print the resulting dataframe
+print(merged_df.head())
 
